@@ -1,0 +1,116 @@
+# Rime schema settings
+# encoding: utf-8
+
+schema:
+  schema_id: xxm
+  name: 小兮码
+  version: "1"
+  author:
+    - 猎鹞
+    - 蓝落萧 <i@tansongchen.com>
+  description: |
+    二笔单字顶功输入方案
+  dependencies:
+    - pinyin_simp
+    - zdcx
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [中, 西]
+  - name: full_shape
+    states: [半, 全]
+  - name: ascii_punct
+    states: [。, ．]
+  - name: zh_trad
+    reset: 0
+    states: [简, 繁]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - affix_segmentor@pinyin
+    - affix_segmentor@zdcx
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - reverse_lookup_translator
+    - table_translator
+    - script_translator@pinyin
+    - table_translator@zdcx
+  filters:
+    - reverse_lookup_filter@reverse_lookup
+    - simplifier
+    - simplifier@zh_trad
+
+speller:
+  alphabet: "bpmfdtnlgkhjqxicsrywzaevou;/,.3489"
+  initials: "bpmfdtnlgkhjqxicsryw"
+  auto_select: true
+
+menu:
+  page_size: 6
+  alternative_select_keys: "_12567"
+  alternative_select_labels: ["", "1", "2", "5", "6", "7"]
+
+translator:
+  dictionary: xxm
+  enable_charset_filter: true
+  enable_sentence: false
+  enable_encoder: true
+  encode_commit_history: true
+  enable_user_dict: true
+  enable_completion: false
+
+zh_trad:
+  opencc_config: s2t.json
+  option_name: zh_trad
+
+punctuator:
+  import_preset: symbols
+  half_shape:
+    "e": { commit: "！" }
+    "v": { commit: "？" }
+    "o": { commit: "：" }
+    "u": { commit: "……" }
+
+pinyin:
+  tag: pinyin
+  dictionary: pinyin_simp
+  enable_user_dict: false
+  prefix: a
+  tips: 〔拼音反查〕
+
+zdcx:
+  tag: zdcx
+  dictionary: zdcx
+  enable_user_dict: false
+  prefix: z
+  tips: 〔二笔反查〕
+
+reverse_lookup:
+  tags: [zdcx, pinyin]
+  overwrite_comment: true
+  dictionary: xxm
+  comment_format:
+    - "xform/$/〕/"
+    - "xform/^/〔/"
+
+recognizer:
+  patterns:
+    zdcx: "^z[a-z]*'?$"
+    pinyin: "^a[a-z]*'?$"
+    characters: "^[bpmfdtnlgkhjqxiscryw][a-z;,./]?[zaevou;/]*$"
+    words: "^[bpmfdtnlgkhjqxiscryw][a-z;,./][389][a-z;,./]{0,2}$"
